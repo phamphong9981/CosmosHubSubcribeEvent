@@ -37,6 +37,7 @@ func (server *LiveServer) connectNode() {
 	}
 	node_connect = true
 	server.node_connection = c_node
+	log.Println("Connected to Node")
 }
 
 func (server *LiveServer) connectDBServer() {
@@ -50,6 +51,7 @@ func (server *LiveServer) connectDBServer() {
 	}
 	db_server_connect = true
 	server.dbserver_connection = c
+	log.Println("Connected to Database Server")
 }
 
 func (server *LiveServer) startWebsocketDBServer() {
@@ -106,35 +108,42 @@ func (server *LiveServer) Run() {
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt)
 
-	// connect to node
-	for {
-		log.Println("Trying to connect to node ...")
-		server.connectNode()
-		if status := node_connect; status == true {
-			break
+	go func() {
+		// connect to node
+		for {
+			log.Println("Trying to connect to node ...")
+			server.connectNode()
+			if status := node_connect; status == true {
+				break
+			}
+			time.Sleep(2 * time.Second)
 		}
-		time.Sleep(2 * time.Second)
-	}
 
-	// connect to db server
-	for {
-		log.Println("Trying to connect to db server ...")
-		server.connectDBServer()
-		if status := db_server_connect; status == true {
-			break
+		// connect to db server
+		for {
+			log.Println("Trying to connect to db server ...")
+			server.connectDBServer()
+			if status := db_server_connect; status == true {
+				break
+			}
+			time.Sleep(2 * time.Second)
 		}
-		time.Sleep(2 * time.Second)
-	}
 
-	// start websockets
-	go server.startWebsocketDBServer()
-	go server.startWebsocketNode()
-	defer server.dbserver_connection.Close()
-	defer server.node_connection.Close()
+		// start websockets
+		go server.startWebsocketDBServer()
+		server.startWebsocketNode()
+	}()
+	if server.dbserver_connection != nil {
+		defer server.dbserver_connection.Close()
+	}
+	if server.node_connection != nil {
+		defer server.node_connection.Close()
+	}
 	// listen event
 	for {
 		select {
 		case <-db_server_disconnect:
+			log.Println("Break point 1")
 			// when disconnect to db server, stop connect to node
 			server.stopWebsocketNode()
 			// restart all
@@ -146,7 +155,6 @@ func (server *LiveServer) Run() {
 			// try to reconnect node
 			server.Run()
 		case message := <-server.Data_channel:
-			log.Println(server)
 			err := server.dbserver_connection.WriteMessage(websocket.TextMessage, []byte(message))
 			if err != nil {
 				log.Println("Database Server maybe seem down:", err)
@@ -156,8 +164,12 @@ func (server *LiveServer) Run() {
 
 			// Cleanly close the connection by sending a close message and then
 			// waiting (with timeout) for the server to close the connection.
-			server.stopWebsocketNode()
-			server.stopWebsocketDBServer()
+			if server.dbserver_connection != nil {
+				server.stopWebsocketDBServer()
+			}
+			if server.node_connection != nil {
+				server.stopWebsocketNode()
+			}
 			return
 		}
 	}
