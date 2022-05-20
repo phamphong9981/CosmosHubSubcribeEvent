@@ -25,18 +25,22 @@ func echo(w http.ResponseWriter, r *http.Request) {
 	connectClient(c)
 	log.Print(connectionsList)
 	for {
-		mt, message, err := c.ReadMessage()
+		_, message, err := c.ReadMessage()
 		if err != nil {
 			log.Println("Node down:", err)
 			disconnectClient(c)
 			break
 		}
 		log.Printf("recv: %s", message)
-		err = c.WriteMessage(mt, message)
 		if err != nil {
 			log.Println("write:", err)
 			break
 		}
+		// var mapData map[string]string
+		// if err := json.Unmarshal([]byte(message), &mapData); err != nil {
+		// 	fmt.Println(err)
+		// }
+		// log.Println("amount:", mapData["amount"], ",validator address:", mapData["validator"])
 	}
 }
 

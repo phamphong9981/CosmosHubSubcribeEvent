@@ -1,6 +1,7 @@
 package live_server
 
 import (
+	"encoding/json"
 	"log"
 	"net/url"
 	"os"
@@ -10,16 +11,9 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-type LiveServer struct {
-	Addr_connected_database string
-	Addr_connected_node     string
-	Data_channel            chan string
-	node_connection         *websocket.Conn
-	dbserver_connection     *websocket.Conn
-}
-
 var node_connect, db_server_connect bool
-var node_disconnect, db_server_disconnect chan bool
+var node_disconnect = make(chan bool)
+var db_server_disconnect = make(chan bool)
 
 func (server *LiveServer) connectNode() {
 	u_node := url.URL{Scheme: "wss", Host: server.Addr_connected_node, Path: "/websocket"}
@@ -51,7 +45,7 @@ func (server *LiveServer) connectDBServer() {
 	}
 	db_server_connect = true
 	server.dbserver_connection = c
-	log.Println("Connected to Database Server")
+	log.Println("Connected to DB Server")
 }
 
 func (server *LiveServer) startWebsocketDBServer() {
@@ -131,19 +125,22 @@ func (server *LiveServer) Run() {
 
 		// start websockets
 		go server.startWebsocketDBServer()
-		server.startWebsocketNode()
+		go server.startWebsocketNode()
 	}()
-	if server.dbserver_connection != nil {
-		defer server.dbserver_connection.Close()
-	}
-	if server.node_connection != nil {
-		defer server.node_connection.Close()
-	}
+	defer func() {
+		if server.dbserver_connection != nil {
+			server.dbserver_connection.Close()
+		}
+	}()
+	defer func() {
+		if server.node_connection != nil {
+			server.node_connection.Close()
+		}
+	}()
 	// listen event
 	for {
 		select {
 		case <-db_server_disconnect:
-			log.Println("Break point 1")
 			// when disconnect to db server, stop connect to node
 			server.stopWebsocketNode()
 			// restart all
@@ -155,9 +152,36 @@ func (server *LiveServer) Run() {
 			// try to reconnect node
 			server.Run()
 		case message := <-server.Data_channel:
-			err := server.dbserver_connection.WriteMessage(websocket.TextMessage, []byte(message))
+			log.Println(message)
+			var messageForm Message
+			err := json.Unmarshal([]byte(message), &messageForm)
 			if err != nil {
-				log.Println("Database Server maybe seem down:", err)
+				log.Fatal(err)
+			}
+			if messageForm.Result.Data.Value.TxResult.Result.Log != "" {
+				var (
+					logs []Log
+					data = make(map[string]string)
+				)
+				json.Unmarshal([]byte(messageForm.Result.Data.Value.TxResult.Result.Log), &logs)
+				for _, events := range logs {
+					for _, event := range events.Events {
+						if event.Type == "unbond" {
+							for _, attr := range event.Attributes {
+								data[attr.Key] = attr.Value
+							}
+							data["time"] = time.Now().Format("01-02-2006 15:04:05")
+						}
+					}
+				}
+				jsonData, err := json.Marshal(data)
+				if err != nil {
+					log.Println("Error when convert data")
+				}
+				err = server.dbserver_connection.WriteMessage(websocket.TextMessage, []byte(string(jsonData)))
+				if err != nil {
+					log.Println("Database Server maybe seem down:", err)
+				}
 			}
 		case <-interrupt:
 			log.Println("interrupt")
