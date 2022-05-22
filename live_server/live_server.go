@@ -23,7 +23,7 @@ func (server *LiveServer) connectNode() {
 		node_connect = false
 		return
 	}
-	err = c_node.WriteMessage(websocket.TextMessage, []byte("{\"jsonrpc\": \"2.0\",\"method\":\"subscribe\",\"id\": 0,\"params\": {\"query\": \"tm.event='Tx' AND unbond.validator='cosmosvaloper178h4s6at5v9cd8m9n7ew3hg7k9eh0s6wptxpcn'\"}}"))
+	err = c_node.WriteMessage(websocket.TextMessage, []byte("{\"jsonrpc\": \"2.0\",\"method\":\"subscribe\",\"id\": 0,\"params\": {\"query\": \"tm.event='Tx' AND unbond.amount>200\"}}"))
 	if err != nil {
 		log.Println("Error while send data to Aura node, write close:", err)
 		node_connect = false

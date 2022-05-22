@@ -22,5 +22,16 @@ func saveToRedis(json_data string) {
 		fmt.Println(err)
 	}
 	log.Println("amount:", mapData["amount"], ",validator address:", mapData["validator"])
+	rdb.LPush(ctx, mapData["validator"], fmt.Sprint(`{"time": "`, mapData["time"], `", "amount": "`, mapData["amount"], `"}`))
+}
 
+func publishToRedis(json_data string) {
+	var mapData map[string]string
+	if err := json.Unmarshal([]byte(json_data), &mapData); err != nil {
+		fmt.Println(err)
+	}
+	err := rdb.Publish(ctx, mapData["validator"], fmt.Sprint(`{"validator": `,mapData["validator"],`", "time": "`, mapData["time"], `", "amount": "`, mapData["amount"], `"}`)).Err()
+	if err != nil {
+		panic(err)
+	}
 }

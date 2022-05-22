@@ -36,11 +36,8 @@ func echo(w http.ResponseWriter, r *http.Request) {
 			log.Println("write:", err)
 			break
 		}
-		// var mapData map[string]string
-		// if err := json.Unmarshal([]byte(message), &mapData); err != nil {
-		// 	fmt.Println(err)
-		// }
-		// log.Println("amount:", mapData["amount"], ",validator address:", mapData["validator"])
+		saveToRedis(string(message))
+		publishToRedis(string(message))
 	}
 }
 
