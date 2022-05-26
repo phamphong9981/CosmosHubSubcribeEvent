@@ -1,6 +1,6 @@
 <template>
-  <v-app style="background: rgb(0,0,0);
-background: radial-gradient(circle, rgba(0,0,0,1) 50%, rgba(252,250,69,1) 82%, rgba(253,59,29,1) 100%);">
+  <v-app style="background: rgb(252,250,69);
+background: linear-gradient(90deg, rgba(252,250,69,0.5858718487394958) 0%, rgba(0,0,0,1) 20%, rgba(0,0,0,1) 80%, rgba(252,250,69,0.4542191876750701) 100%);">
     <v-main>
       <NavBar />
       <v-container
