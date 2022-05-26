@@ -1,17 +1,33 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
+  <v-app style="background: rgb(0,0,0);
+background: radial-gradient(circle, rgba(0,0,0,1) 50%, rgba(252,250,69,1) 82%, rgba(253,59,29,1) 100%);">
+    <v-main>
+      <NavBar />
+      <v-container
+        ><history-table></history-table>
+        <search-bar></search-bar>
+      </v-container>
+    </v-main>
+  </v-app>
 </template>
 
 <script>
-</script>
+import HistoryTable from "./components/AllEvents/HistoryTable.vue";
+import SearchBar from "./components/ByValidators/SearchBar.vue";
+import NavBar from "./components/NavBar.vue";
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
+export default {
+  name: "App",
+
+  components: {
+    NavBar,
+    HistoryTable,
+    SearchBar,
+  },
+
+  data: () => ({
+    //
+  }),
+};
+</script>
+<style></style>
