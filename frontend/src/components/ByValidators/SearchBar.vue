@@ -1,30 +1,38 @@
 <template>
-  <div class="search-bar">
+  <v-row justify="center" class="search-bar"
+    ><v-col cols="8">
       <form action="" method="get">
-          <input type="text" placeholder="Search...">
-      </form>
-  </div>
+        <input type="text" placeholder="Search by validator address..." />
+        <button type="submit">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+      </form> </v-col
+  ></v-row>
 </template>
 
 <script>
-export default {
-
-}
+export default {};
 </script>
 
 <style>
-input[type="text"]{
-    background: white;
-    width: 80%;
-    border: none;
-    outline: none;
-    color: black;
+form {
+  background: white;
+  border-radius: 40px;
 }
-::placeholder{
-    color: gray;
+input[type="text"] {
+  height: 57px;
+  border: none;
+  outline: none;
+  color: black;
+  width: 95%;
+  padding: 15px;
 }
-.search-bar{
-    margin-top: 20px;
-
+button {
+}
+::placeholder {
+  color: gray;
+}
+.search-bar {
+  margin-top: 20px;
 }
 </style>

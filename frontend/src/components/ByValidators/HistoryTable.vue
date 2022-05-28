@@ -1,23 +1,34 @@
 <template>
-  <div class="background">
-    <table>
-      <tr>
-        <th>Validator address</th>
-        <th>Amount</th>
-        <th>Time</th>
-        <th>Completion time</th>
-      </tr>
-      <tr v-for="item in desserts" :key="item.name">
-        <td>{{ item.name }}</td>
-        <td>{{ item.calories }}</td>
-      </tr>
-    </table>
+  <div>
+    <h1 style="text-align: center; margin-bottom:20px">{{validator}}</h1>
+    <div class="background">
+      <table>
+        <tr>
+          <th>Amount</th>
+          <th>Time</th>
+          <th>Completion time</th>
+        </tr>
+        <tr v-for="item in desserts" :key="item.name">
+          <td>{{ item.name }}</td>
+          <td>{{ item.calories }}</td>
+        </tr>
+      </table>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
-  setup() {
+  props: {
+    validator: {
+      type: String,
+      required: false,
+      default: "12313d4sfdsgsfgfsg64fs65gfds5g46",
+    },
+  },
+  setup(props) {
+    // pull data ve
+    console.log(props);
     return {
       desserts: [
         {
@@ -107,7 +118,7 @@ export default {
 </script>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Anton&family=Josefin+Slab:wght@400&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Anton&family=Josefin+Slab:wght@400&display=swap");
 * {
   color: white;
 }
@@ -122,18 +133,17 @@ td {
   border: 1px solid white;
   border-collapse: collapse;
   text-align: center;
-  font-family: 'Josefin Slab', serif;
+  font-family: "Josefin Slab", serif;
 }
 
-th{
-    height: 80px;
-    font-family: 'Anton', sans-serif;
-    font-size: 20px;
+th {
+  height: 80px;
+  font-family: "Anton", sans-serif;
 }
-td{
-    height: 40px;
+td {
+  height: 40px;
 }
-.background{
+.background {
   background: gray;
 }
 </style>
