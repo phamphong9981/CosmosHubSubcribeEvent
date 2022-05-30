@@ -10,8 +10,8 @@
     </div>
     <div class="nav">
       <ul>
-        <li><a href="">All events</a></li>
-        <li><a href="">By Validator</a></li>
+        <li><router-link to="/">All events</router-link></li>
+        <li><router-link to="/by_validators">By Validators</router-link></li>
       </ul>
     </div>
     <div class="link">

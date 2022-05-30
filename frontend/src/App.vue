@@ -5,8 +5,7 @@
       <v-container>
         <v-row justify="center" class="search-bar"
           ><v-col cols="10">
-            <all-events></all-events>
-            <by-validators></by-validators></v-col
+            <transition name="nav"><router-view /></transition></v-col
         ></v-row>
       </v-container>
     </v-main>
@@ -14,8 +13,6 @@
 </template>
 
 <script>
-import AllEvents from "./components/AllEvents/AllEvents.vue";
-import ByValidators from "./components/ByValidators/ByValidators.vue";
 import NavBar from "./components/NavBar.vue";
 
 export default {
@@ -23,8 +20,6 @@ export default {
 
   components: {
     NavBar,
-    AllEvents,
-    ByValidators,
   },
 
   data: () => ({
@@ -42,5 +37,17 @@ export default {
     rgba(0, 0, 0, 1) 80%,
     rgba(252, 250, 69, 0.4542191876750701) 100%
   );
+}
+.nav-enter-from,
+.nav-leave-to {
+  opacity: 0;
+}
+.nav-enter-to,
+.nav-leave-from {
+  opacity: 1;
+}
+.nav-enter-active,
+.nav-leave-active {
+  transition: opacity 0.6s ease;
 }
 </style>

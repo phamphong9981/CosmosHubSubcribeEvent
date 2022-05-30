@@ -125,7 +125,6 @@ export default {
 table {
   width: 100%;
   border-radius: 20px;
-  height: 500px;
 }
 table,
 th,
