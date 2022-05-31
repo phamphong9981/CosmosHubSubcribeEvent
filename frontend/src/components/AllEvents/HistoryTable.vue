@@ -5,12 +5,12 @@
         <th>Validator address</th>
         <th>Amount</th>
         <th>Time</th>
-        <th>Completion time</th>
       </tr>
       <transition-group name="table-row">
-        <tr v-for="item in data" :key="item.name">
-          <td>{{ item.name }}</td>
-          <td>{{ item.calories }}</td>
+        <tr v-for="item in data" :key="JSON.stringify(item)">
+          <td>{{ item.validator }}</td>
+          <td>{{ item.amount }}</td>
+          <td>{{ item.time }}</td>
         </tr>
       </transition-group>
     </table>

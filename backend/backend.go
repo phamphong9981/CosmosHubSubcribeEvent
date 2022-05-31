@@ -1,10 +1,10 @@
 package backend
 
 import (
-	"encoding/json"
 	"log"
 	"net/http"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 )
@@ -16,6 +16,7 @@ func getRealtime(w http.ResponseWriter, r *http.Request) {
 		log.Print("upgrade:", err)
 		return
 	}
+	//log.Print()
 	// for {
 	// 	msg, err := subscribeAllChannel.ReceiveMessage(ctx)
 	// 	if err != nil {
@@ -27,17 +28,16 @@ func getRealtime(w http.ResponseWriter, r *http.Request) {
 }
 func Run() {
 	r := gin.Default()
+	r.Use(cors.New(cors.Config{
+		AllowOrigins: []string{"*"},
+		AllowMethods: []string{"POST", "PUT", "PATCH", "DELETE"},
+		AllowHeaders: []string{"Content-Type,access-control-allow-origin, access-control-allow-headers"},
+	}))
 	r.GET("/unbond/:validator", func(c *gin.Context) {
 		var validator = c.Param("validator")
-		c.JSON(200, getUnbondFromValidator(validator))
+		c.JSONP(200, getUnbondFromValidator(validator))
 	})
 
-	r.GET("/test", func(c *gin.Context) {
-		data := Data{validator:"1213246545",time: "dgfdsgfd", amount:"fgfdsgdfhgfhgf"}
-		jData, _ := json.Marshal(data)
-		log.Print(jData)
-		c.JSON(200, jData)
-	})
 	http.HandleFunc("/websocket", getRealtime)
 	r.Run(":8088") // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }

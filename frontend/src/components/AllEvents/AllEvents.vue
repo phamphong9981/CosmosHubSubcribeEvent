@@ -8,24 +8,14 @@
 <script>
 import { useStore } from "vuex";
 import HistoryTable from "./HistoryTable.vue";
-// import { getData } from "@/api/get.js";
-import { ref } from "@vue/reactivity";
-import { onMounted } from "vue";
+
 export default {
   components: { HistoryTable },
   setup() {
     const store = useStore();
-    const data = ref(null);
-    onMounted(async () => {
-      const response = await fetch("http://localhost:8088/unbond/all", {
-        mode: "no-cors",
-      });
-      console.log(response);
-      store.commit("table/updateData", response);
-    });
+    store.dispatch("table/getData");
     return {
       store,
-      data,
     };
   },
 };
