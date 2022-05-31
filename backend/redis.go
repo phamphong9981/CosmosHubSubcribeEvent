@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/go-redis/redis/v8"
+	"github.com/gorilla/websocket"
 )
 
 var ctx = context.Background()
@@ -26,4 +27,14 @@ func getUnbondFromValidator(validator string) []string {
 
 func subscibeAll() {
 	subscribeAllChannel = rdb.Subscribe(ctx, "all")
+	for {
+		msg, err := subscribeAllChannel.ReceiveMessage(ctx)
+		list := getConnectionsList()
+		if err != nil {
+			panic(err)
+		}
+		for con, _ := range list {
+			err = con.WriteMessage(websocket.TextMessage, []byte(msg.Payload))
+		}
+	}
 }

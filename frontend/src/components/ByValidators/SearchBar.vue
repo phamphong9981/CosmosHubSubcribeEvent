@@ -27,7 +27,8 @@ input[type="text"] {
   width: 95%;
   padding: 15px;
 }
-button {
+button i{
+  color: gray;
 }
 ::placeholder {
   color: gray;

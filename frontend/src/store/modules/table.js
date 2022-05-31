@@ -5,23 +5,38 @@ const state = () => ({
 });
 const mutations = {
   updateData(state, data) {
-    Object.assign(state.items,data)
+    Object.assign(state.items, data);
+  },
+  newData(state, data) {
+    state.items.unshift(JSON.parse(data));
+    state.items.pop();
   },
 };
 
 const actions = {
   async getData(context) {
     const response = await axios.get("http://localhost:8088/unbond/all");
-    const data=[]
-    response.data.map(item=>{
-      console.log(item);
-      data.push(JSON.parse(item))
-    })
-    context.commit("updateData",data);
+    const data = [];
+    response.data.map((item) => {
+      data.push(JSON.parse(item));
+    });
+    context.commit("updateData", data);
   },
-  async streamRealData(){
-
-  }
+  async getDataValidator(context, [validator]) {
+    if (validator) {
+      const response = await axios.get(
+        "http://localhost:8088/unbond/" + validator
+      );
+      const data = [];
+      response.data.map((item) => {
+        data.push(JSON.parse(item));
+      });
+      context.commit("updateData", data);
+    }else{
+      console.log("Break point");
+      context.commit("updateData", []);
+    }
+  },
 };
 
 export default {

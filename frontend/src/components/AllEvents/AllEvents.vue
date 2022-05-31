@@ -6,6 +6,7 @@
 </template>
 
 <script>
+import { onBeforeUnmount } from '@vue/runtime-core';
 import { useStore } from "vuex";
 import HistoryTable from "./HistoryTable.vue";
 
@@ -13,7 +14,17 @@ export default {
   components: { HistoryTable },
   setup() {
     const store = useStore();
+    const socket = new WebSocket("ws://localhost:8088/websocket");
     store.dispatch("table/getData");
+    socket.onmessage = function (message) {
+      store.commit("table/newData",message.data)
+    };
+    socket.onopen = function () {
+      console.log("Successfully connected to the echo websocket server...");
+    };
+    onBeforeUnmount(()=>{
+      socket.close()
+    })
     return {
       store,
     };

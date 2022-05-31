@@ -9,23 +9,21 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-func getRealtime(w http.ResponseWriter, r *http.Request) {
-	var upgrader = websocket.Upgrader{} // use default options
-	_, err := upgrader.Upgrade(w, r, nil)
+func serveClient(c *gin.Context) {
+	var upgrader = websocket.Upgrader{
+		CheckOrigin: func(r *http.Request) bool {
+			return true
+		},
+	} // use default options
+	con, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		log.Print("upgrade:", err)
 		return
 	}
-	//log.Print()
-	// for {
-	// 	msg, err := subscribeAllChannel.ReceiveMessage(ctx)
-	// 	if err != nil {
-	// 		panic(err)
-	// 	}
 
-	// 	fmt.Println(msg.Channel, msg.Payload)
-	// }
+	connectClient(con)
 }
+
 func Run() {
 	r := gin.Default()
 	r.Use(cors.New(cors.Config{
@@ -37,7 +35,7 @@ func Run() {
 		var validator = c.Param("validator")
 		c.JSONP(200, getUnbondFromValidator(validator))
 	})
-
-	http.HandleFunc("/websocket", getRealtime)
+	go subscibeAll()
+	r.GET("/websocket", serveClient)
 	r.Run(":8088") // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }

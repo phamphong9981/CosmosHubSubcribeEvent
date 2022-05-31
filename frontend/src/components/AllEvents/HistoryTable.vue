@@ -38,7 +38,8 @@ export default {
 table {
   width: 100%;
   border-radius: 20px;
-  max-height: 500px;
+  /* max-height: 500px; */
+  overflow: hidden;
 }
 table,
 th,

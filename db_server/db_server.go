@@ -31,11 +31,6 @@ func echo(w http.ResponseWriter, r *http.Request) {
 			disconnectClient(c)
 			break
 		}
-		log.Printf("recv: %s", message)
-		if err != nil {
-			log.Println("write:", err)
-			break
-		}
 		saveToRedis(string(message))
 		publishToRedis(string(message))
 	}
