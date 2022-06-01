@@ -7,10 +7,12 @@
           <th>Amount</th>
           <th>Time</th>
         </tr>
-        <tr v-for="item in data" :key="item.name">
-          <td>{{ item.amount }}</td>
-          <td>{{ item.time }}</td>
-        </tr>
+        <transition-group name="table-row">
+          <tr v-for="item in data" :key="JSON.stringify(item)">
+            <td>{{ item.amount }}</td>
+            <td>{{ item.time }}</td>
+          </tr>
+        </transition-group>
       </table>
     </div>
   </div>

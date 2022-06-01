@@ -2,6 +2,7 @@ package backend
 
 import (
 	"context"
+	"log"
 
 	"github.com/go-redis/redis/v8"
 	"github.com/gorilla/websocket"
@@ -25,16 +26,36 @@ func getUnbondFromValidator(validator string) []string {
 	return rdb.LRange(ctx, validator, 0, -1).Val()
 }
 
-func subscibeAll() {
-	subscribeAllChannel = rdb.Subscribe(ctx, "all")
-	for {
-		msg, err := subscribeAllChannel.ReceiveMessage(ctx)
+func subscibeInit() {
+	subscribeAllChannel = rdb.PSubscribe(ctx, "*")
+}
+func handleSubscibe() {
+	// for {
+	// 	msg, err := subscribeAllChannel.ReceiveMessage(ctx)
+	// 	list := getConnectionsList()
+	// 	if err != nil {
+	// 		panic(err)
+	// 	}
+	// 	for con, validator := range list {
+	// 		if validator == msg.Channel {
+	// 			err = con.WriteMessage(websocket.TextMessage, []byte(msg.Payload))
+	// 		}
+	// 	}
+	// }
+
+	ch := subscribeAllChannel.Channel()
+
+	for msg := range ch {
 		list := getConnectionsList()
-		if err != nil {
-			panic(err)
-		}
-		for con, _ := range list {
-			err = con.WriteMessage(websocket.TextMessage, []byte(msg.Payload))
+		for con, validator := range list {
+			if validator == msg.Channel {
+				err:= con.WriteMessage(websocket.TextMessage, []byte(msg.Payload))
+				log.Print(validator)
+				if err!=nil {
+					log.Print("There are disconnect")
+					disconnectClient(con)
+				}
+			}
 		}
 	}
 }

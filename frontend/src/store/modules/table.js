@@ -1,15 +1,19 @@
 import axios from "axios";
-
 const state = () => ({
   items: [],
 });
 const mutations = {
   updateData(state, data) {
+    state.items.splice(0, state.items.length);
     Object.assign(state.items, data);
   },
   newData(state, data) {
-    state.items.unshift(JSON.parse(data));
-    state.items.pop();
+    if (state.items.length >= 10) {
+      state.items.unshift(JSON.parse(data));
+      state.items.pop();
+    } else {
+      state.items.unshift(JSON.parse(data));
+    }
   },
 };
 
@@ -32,8 +36,8 @@ const actions = {
         data.push(JSON.parse(item));
       });
       context.commit("updateData", data);
-    }else{
-      console.log("Break point");
+    } else {
+      console.log(validator);
       context.commit("updateData", []);
     }
   },

@@ -8,18 +8,18 @@ import (
 
 var lock = &sync.Mutex{}
 
-var connectionsList = make(map[*websocket.Conn]bool)
+var connectionsList = make(map[*websocket.Conn]string)
 
-func getConnectionsList() map[*websocket.Conn]bool {
+func getConnectionsList() map[*websocket.Conn]string {
 	lock.Lock()
-	
+
 	defer lock.Unlock()
 	return connectionsList
 }
 
-func connectClient(connection *websocket.Conn) {
+func connectClient(connection *websocket.Conn, validator string) {
 	lock.Lock()
-	(connectionsList)[connection] = true
+	(connectionsList)[connection] = validator
 	lock.Unlock()
 }
 

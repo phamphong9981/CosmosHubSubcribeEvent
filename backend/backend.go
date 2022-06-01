@@ -20,8 +20,25 @@ func serveClient(c *gin.Context) {
 		log.Print("upgrade:", err)
 		return
 	}
+	connectClient(con, "all")
 
-	connectClient(con)
+}
+
+func serveClientByValidator(c *gin.Context) {
+	var validator = c.Param("validator")
+	log.Print(validator)
+	var upgrader = websocket.Upgrader{
+		CheckOrigin: func(r *http.Request) bool {
+			return true
+		},
+	} // use default options
+	con, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+	if err != nil {
+		log.Print("upgrade:", err)
+		return
+	}
+
+	connectClient(con, validator)
 }
 
 func Run() {
@@ -35,7 +52,9 @@ func Run() {
 		var validator = c.Param("validator")
 		c.JSONP(200, getUnbondFromValidator(validator))
 	})
-	go subscibeAll()
+	subscibeInit()
+	go handleSubscibe()
 	r.GET("/websocket", serveClient)
+	r.GET("/websocket/validator/:validator", serveClientByValidator)
 	r.Run(":8088") // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
