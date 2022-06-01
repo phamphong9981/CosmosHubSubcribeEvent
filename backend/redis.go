@@ -30,18 +30,6 @@ func subscibeInit() {
 	subscribeAllChannel = rdb.PSubscribe(ctx, "*")
 }
 func handleSubscibe() {
-	// for {
-	// 	msg, err := subscribeAllChannel.ReceiveMessage(ctx)
-	// 	list := getConnectionsList()
-	// 	if err != nil {
-	// 		panic(err)
-	// 	}
-	// 	for con, validator := range list {
-	// 		if validator == msg.Channel {
-	// 			err = con.WriteMessage(websocket.TextMessage, []byte(msg.Payload))
-	// 		}
-	// 	}
-	// }
 
 	ch := subscribeAllChannel.Channel()
 
