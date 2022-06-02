@@ -8,9 +8,9 @@ import (
 
 var lock = &sync.Mutex{}
 
-var connectionsList = make(map[*websocket.Conn]bool)
+var connectionsList = make(map[*websocket.Conn]string)
 
-func getConnectionsList() map[*websocket.Conn]bool {
+func getConnectionsList() map[*websocket.Conn]string {
 	lock.Lock()
 
 	defer lock.Unlock()
@@ -19,7 +19,7 @@ func getConnectionsList() map[*websocket.Conn]bool {
 
 func connectClient(connection *websocket.Conn) {
 	lock.Lock()
-	(connectionsList)[connection] = true
+	(connectionsList)[connection] = connection.RemoteAddr().String()
 	lock.Unlock()
 }
 

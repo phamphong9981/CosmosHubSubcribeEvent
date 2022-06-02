@@ -4,13 +4,13 @@ import (
 	"flag"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/websocket"
 )
 
 type DBServer struct {
-	Addr_connected_live_server    string
-	Addr_connected_recover_server string
+	WebsocketAddress string
 }
 
 func echo(w http.ResponseWriter, r *http.Request) {
@@ -20,25 +20,39 @@ func echo(w http.ResponseWriter, r *http.Request) {
 		log.Print("upgrade:", err)
 		return
 	}
-	log.Print("Node", r.URL, r.URL.User, r.Host, "up")
-	defer c.Close()
+	log.Print("Node", c.RemoteAddr().String(), " up")
+	
+
 	connectClient(c)
 	log.Print(connectionsList)
+}
+
+func handleConnection() {
 	for {
-		_, message, err := c.ReadMessage()
-		if err != nil {
-			log.Println("Node down:", err)
-			disconnectClient(c)
-			break
+		for c, addr := range getConnectionsList() {
+			log.Print("Connected to live server "+ addr)
+			defer c.Close()
+			for {
+				_, message, err := c.ReadMessage()
+				if err != nil {
+					log.Println("Node ", addr, " down:", err)
+					disconnectClient(c)
+					break
+				}
+				saveToRedis(string(message))
+				publishToRedis(string(message))
+			}
 		}
-		saveToRedis(string(message))
-		publishToRedis(string(message))
+		// There arent any available live sever which could connect
+		log.Print("There arent any available live sever which could connect. Wait 1 second for live server up")
+		time.Sleep(1*time.Second)
 	}
 }
 
 func (server *DBServer) Run() {
 	flag.Parse()
 	log.SetFlags(0)
+	go handleConnection()
 	http.HandleFunc("/websocket", echo)
-	log.Fatal(http.ListenAndServe(server.Addr_connected_live_server, nil))
+	log.Fatal(http.ListenAndServe(server.WebsocketAddress, nil))
 }

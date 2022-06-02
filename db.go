@@ -3,6 +3,6 @@ import (
 	"datn/db_server"
 )
 func main(){
-	var db_sv=db_server.DBServer{Addr_connected_live_server: "localhost:8080",Addr_connected_recover_server: ""}
+	var db_sv=db_server.DBServer{WebsocketAddress: "localhost:8080"}
 	db_sv.Run()
 }
