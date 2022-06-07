@@ -171,6 +171,7 @@ func (server *LiveServer) Run() {
 								data[attr.Key] = attr.Value
 							}
 							data["time"] = time.Now().Format("01-02-2006 15:04:05")
+							data["raw"]=message
 						}
 					}
 				}
