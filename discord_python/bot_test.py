@@ -1,25 +1,59 @@
-
-from turtle import title
 import discord
 from discord.ext import commands, tasks
 from pymongo import MongoClient
 import redis
+import json
+import os
+from dotenv import load_dotenv
 
+#load token
+BASEDIR = os.path.abspath(os.path.dirname(__file__))
+load_dotenv(os.path.join(BASEDIR, 'config.env'))
+TOKEN=os.getenv("TOKEN")
 
+#mongo
 client = MongoClient('localhost', 27017)
 db = client["CosmosHubSubcribeEvent"]
 collection = db["config"]
-intents = discord.Intents.default()
-intents.members = True
+
+#redis
 r = redis.Redis(host="localhost", port='6379')
 pub = r.pubsub()
-pub.psubscribe("*")
+pub.psubscribe("all")
+
+
+#discord
+intents = discord.Intents.default()
+intents.members = True
 
 bot = commands.Bot(command_prefix='!',
                    intents=intents)
 
 bot.remove_command("help")
 
+def get_warning_embed(detail):
+    embed = discord.Embed(title="Warning", color=0xFF0000)
+    embed.add_field(
+        name="Detail:", value=detail, inline=False)
+    return embed
+
+def get_high_embed(detail):
+    embed = discord.Embed(title="High", color=0xFF8000)
+    embed.add_field(
+        name="Detail:", value=detail, inline=False)
+    return embed
+
+def get_medium_embed(detail):
+    embed = discord.Embed(title="Medium", color=0xFFFF00)
+    embed.add_field(
+        name="Detail:", value=detail, inline=False)
+    return embed
+
+def get_low_embed(detail):
+    embed = discord.Embed(title="Low", color=0x00FF00)
+    embed.add_field(
+        name="Detail:", value=detail, inline=False)
+    return embed
 
 @bot.event
 async def on_command_error(ctx, error):
@@ -66,22 +100,30 @@ async def config(ctx, low: int, medium: int, high: int, warning: int):
     collection.update_one({'_id': ctx.message.author.id}, {"$set": {
                           '_id': ctx.message.author.id, "low": low, "medium": medium, "high": high, "warning": warning}}, True)
 
-# @bot.command()
-# async def status(ctx):
-#     embed = discord.Embed(title="List status", color=0xFF5733,
-#                           description="Welcome to help section. This is an embed that will show list available status")
-#     embed.add_field(
-#         name="!info", value="Get your registered threshold log", inline=False)
-#     embed.add_field(name="!config <status> <threshold>",
-#                     value="Get your registered threshold log", inline=False)
-#     await ctx.send(embed=embed)
 
 @tasks.loop(seconds=1)
 async def my_background_task():
-    data=pub.get_message()
+    data = pub.get_message()
     if data:
-        user = await bot.fetch_user(983558322819059722)
-        await user.send('TEST!')
+        if type(data["data"]) is bytes:
+            json_data=json.loads(data["data"].decode('utf-8'))
+            amount=int(json_data["amount"][0:-5])
+            warning_list=collection.find({"warning": {"$lt": amount}})
+            medium_list=collection.find({"medium": {"$lt": amount}, "high":{"$gt":amount}})
+            high_list=collection.find({"high": {"$lt": amount}, "warning":{"$gt":amount}})
+            low_list=collection.find({"low": {"$lt": amount}, "medium":{"$gt":amount}})
+            for x in warning_list:
+                user = await bot.fetch_user(x["_id"])
+                await user.send(embed=get_warning_embed(json_data))
+            for x in medium_list:
+                user = await bot.fetch_user(x["_id"])
+                await user.send(embed=get_medium_embed(json_data))
+            for x in high_list:
+                user = await bot.fetch_user(x["_id"])
+                await user.send(embed=get_high_embed(json_data))
+            for x in low_list:
+                user = await bot.fetch_user(x["_id"])
+                await user.send(embed=get_low_embed(json_data))
 
 
 @my_background_task.before_loop
@@ -90,4 +132,4 @@ async def my_background_task_before_loop():
 
 my_background_task.start()
 
-bot.run("OTY1MjU0NTA0MjQ3MzM3MDIw.Gb7bxS.TFAaohtFr5l-xhYdAZh-p8ePSlXjSQm23xSJj0")
+bot.run(TOKEN)

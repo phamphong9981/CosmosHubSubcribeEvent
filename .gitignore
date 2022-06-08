@@ -25,3 +25,6 @@ frontend/*.sw?
 
 # tmp air 
 tmp
+
+# config file
+discord_python/config.env
