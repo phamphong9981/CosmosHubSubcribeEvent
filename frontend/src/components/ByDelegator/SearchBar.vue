@@ -4,8 +4,8 @@
       <form action="" method="get">
         <input
           type="text"
-          placeholder="Search by validator address..."
-          v-model="validator"
+          placeholder="Search by delegator address..."
+          v-model="delegator"
         />
         <button type="submit" @click.prevent="search()">
           <i class="fa-solid fa-magnifying-glass"></i>
@@ -21,16 +21,16 @@ import { onBeforeUnmount } from "@vue/runtime-core";
 export default {
   setup() {
     const store = useStore();
-    const validator = ref("");
+    const delegator = ref("");
     const socket = ref(null);
     const search = function () {
       if (socket.value) {
         socket.value.close();
       }
-      store.dispatch("table/getDataValidator", [validator.value]);
-      if (validator.value != "") {
+      store.dispatch("table/getDataDelegator", [delegator.value]);
+      if (delegator.value != "") {
         socket.value = new WebSocket(
-          "ws://localhost:8088/websocket/validator/" + validator.value
+          "ws://localhost:8088/websocket/delegator/" + delegator.value
         );
         socket.value.onmessage = function (message) {
           store.commit("table/newData", message.data);
@@ -38,7 +38,7 @@ export default {
         socket.value.onopen = function () {
           console.log(
             "Successfully connected to the " +
-              validator +
+              delegator +
               " websocket server..."
           );
         };
@@ -50,7 +50,7 @@ export default {
       }
     });
     return {
-      validator,
+      delegator,
       search,
       store,
     };

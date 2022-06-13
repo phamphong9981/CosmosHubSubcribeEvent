@@ -171,7 +171,9 @@ func (server *LiveServer) Run() {
 								data[attr.Key] = attr.Value
 							}
 							data["time"] = time.Now().Format("01-02-2006 15:04:05")
-							data["raw"]=message
+							data["delegator"]=messageForm.Result.Events["transfer.sender"][0]
+							data["tx_hash"]=messageForm.Result.Events["tx.hash"][0]
+							data["tx_fee"]=messageForm.Result.Events["tx.fee"][0]
 						}
 					}
 				}

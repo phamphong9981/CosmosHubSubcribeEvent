@@ -26,10 +26,10 @@ const actions = {
     });
     context.commit("updateData", data);
   },
-  async getDataValidator(context, [validator]) {
-    if (validator) {
+  async getDataDelegator(context, [delegator]) {
+    if (delegator) {
       const response = await axios.get(
-        "http://localhost:8088/unbond/" + validator
+        "http://localhost:8088/unbond/" + delegator
       );
       const data = [];
       response.data.map((item) => {
@@ -37,7 +37,7 @@ const actions = {
       });
       context.commit("updateData", data);
     } else {
-      console.log(validator);
+      console.log(delegator);
       context.commit("updateData", []);
     }
   },

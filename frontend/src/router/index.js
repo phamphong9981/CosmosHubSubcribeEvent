@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 
 import AllEvents from "@/components/AllEvents/AllEvents.vue";
-import ByValidators from "@/components/ByValidators/ByValidators.vue";
+import ByDelegator from "@/components/ByDelegator/ByDelegator.vue";
 
 const routes = [
   {
@@ -9,8 +9,8 @@ const routes = [
     component: AllEvents,
   },
   {
-    path: "/by_validators",
-    component: ByValidators,
+    path: "/by_delegator",
+    component: ByDelegator,
   }
 ];
 

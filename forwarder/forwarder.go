@@ -41,6 +41,7 @@ func handleConnection() {
 				}
 				saveToRedis(string(message))
 				publishToRedis(string(message))
+				saveToMongo(string(message))
 			}
 		}
 		// There arent any available live sever which could connect

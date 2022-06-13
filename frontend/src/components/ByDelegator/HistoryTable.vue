@@ -4,13 +4,17 @@
     <div class="background">
       <table>
         <tr>
+          <th>Validator address</th>
           <th>Amount</th>
           <th>Time</th>
+          <th>Transaction hash</th>
         </tr>
         <transition-group name="table-row">
           <tr v-for="item in data" :key="JSON.stringify(item)">
+            <td>{{ item.validator }}</td>
             <td>{{ item.amount }}</td>
             <td>{{ item.time }}</td>
+            <td>{{ item.tx_hash }}</td>
           </tr>
         </transition-group>
       </table>

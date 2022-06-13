@@ -24,9 +24,9 @@ func serveClient(c *gin.Context) {
 
 }
 
-func serveClientByValidator(c *gin.Context) {
-	var validator = c.Param("validator")
-	log.Print(validator)
+func serveClientByDelegator(c *gin.Context) {
+	var delegator = c.Param("delegator")
+	log.Print(delegator)
 	var upgrader = websocket.Upgrader{
 		CheckOrigin: func(r *http.Request) bool {
 			return true
@@ -38,7 +38,7 @@ func serveClientByValidator(c *gin.Context) {
 		return
 	}
 
-	connectClient(con, validator)
+	connectClient(con, delegator)
 }
 
 func Run() {
@@ -55,6 +55,6 @@ func Run() {
 	subscibeInit()
 	go handleSubscibe()
 	r.GET("/websocket", serveClient)
-	r.GET("/websocket/validator/:validator", serveClientByValidator)
+	r.GET("/websocket/delegator/:delegator", serveClientByDelegator)
 	r.Run(":8088") // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }

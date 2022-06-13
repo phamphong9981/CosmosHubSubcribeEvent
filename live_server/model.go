@@ -13,9 +13,9 @@ type LiveServer struct {
 }
 
 type Message struct {
-	Jsonrpc   string
-	Id     int
-	Result struct {
+	Jsonrpc string
+	Id      int
+	Result  struct {
 		Data struct {
 			Value struct {
 				TxResult struct {
@@ -25,6 +25,7 @@ type Message struct {
 				}
 			}
 		}
+		Events map[string][]string
 	}
 }
 
@@ -33,9 +34,9 @@ type Attribute struct {
 	Value string `json: "value"`
 }
 type Event struct {
-	Type string `json: "type"`
+	Type       string      `json: "type"`
 	Attributes []Attribute `json: "attribute"`
 }
-type Log struct{
+type Log struct {
 	Events []Event `json: "events"`
 }

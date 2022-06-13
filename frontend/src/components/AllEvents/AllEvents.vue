@@ -17,6 +17,7 @@ export default {
     const socket = new WebSocket("ws://localhost:8088/websocket");
     store.dispatch("table/getData");
     socket.onmessage = function (message) {
+      console.log(message);
       store.commit("table/newData",message.data)
     };
     socket.onopen = function () {

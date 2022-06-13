@@ -2,12 +2,14 @@
   <div class="background">
     <table>
       <tr>
+        <th>Delegator address</th>
         <th>Validator address</th>
         <th>Amount</th>
         <th>Time</th>
       </tr>
       <transition-group name="table-row">
         <tr v-for="item in data" :key="JSON.stringify(item)">
+          <td>{{ item.delegator }}</td>
           <td>{{ item.validator }}</td>
           <td>{{ item.amount }}</td>
           <td>{{ item.time }}</td>

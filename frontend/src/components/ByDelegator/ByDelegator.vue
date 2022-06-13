@@ -13,7 +13,7 @@ export default {
   components: { HistoryTable, SearchBar },
   setup() {
     const store=useStore()
-    store.dispatch("table/getDataValidator",[""])
+    store.dispatch("table/getDataDelegator",[""])
   },
 };
 </script>
