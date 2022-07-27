@@ -16,15 +16,15 @@ var rdb = redis.NewClient(&redis.Options{
 	DB:       0,  // use default DB
 })
 
-func getUnbondFromValidator(validator string) []string {
-	if validator == "" {
-		return nil
-	}
-	if validator == "all" {
-		return rdb.LRange(ctx, "all", 0, 20).Val()
-	}
-	return rdb.LRange(ctx, validator, 0, -1).Val()
-}
+// func getUnbondFromDelegator(delegator string) []string {
+// 	if delegator == "" {
+// 		return nil
+// 	}
+// 	if delegator == "all" {
+// 		return rdb.LRange(ctx, "all", 0, 20).Val()
+// 	}
+// 	return rdb.LRange(ctx, delegator, 0, -1).Val()
+// }
 
 func subscibeInit() {
 	subscribeAllChannel = rdb.PSubscribe(ctx, "*")

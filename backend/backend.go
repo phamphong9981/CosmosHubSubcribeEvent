@@ -48,9 +48,9 @@ func Run() {
 		AllowMethods: []string{"POST", "PUT", "PATCH", "DELETE"},
 		AllowHeaders: []string{"Content-Type,access-control-allow-origin, access-control-allow-headers"},
 	}))
-	r.GET("/unbond/:validator", func(c *gin.Context) {
-		var validator = c.Param("validator")
-		c.JSONP(200, getUnbondFromValidator(validator))
+	r.GET("/unbond/:delegator", func(c *gin.Context) {
+		var delegator = c.Param("delegator")
+		c.JSONP(200, getUnbondFromDelegator(delegator))
 	})
 	subscibeInit()
 	go handleSubscibe()

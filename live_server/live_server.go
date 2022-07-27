@@ -45,7 +45,7 @@ func (server *LiveServer) connectDBServer() {
 	}
 	db_server_connect = true
 	server.dbserver_connection = c
-	log.Println("Connected to DB Server")
+	log.Println("Connected to Forwarder")
 }
 
 func (server *LiveServer) startWebsocketDBServer() {
@@ -95,7 +95,7 @@ func (server *LiveServer) stopWebsocketDBServer() {
 	case <-db_server_disconnect:
 	case <-time.After(time.Second):
 	}
-	log.Println("Stopped connection to DB Server")
+	log.Println("Stopped connection to Forwarder")
 }
 
 func (server *LiveServer) Run() {
@@ -113,9 +113,9 @@ func (server *LiveServer) Run() {
 			time.Sleep(2 * time.Second)
 		}
 
-		// connect to db server
+		// connect to Forwarder
 		for {
-			log.Println("Trying to connect to db server ...")
+			log.Println("Trying to connect to forwarder ...")
 			server.connectDBServer()
 			if status := db_server_connect; status == true {
 				break
@@ -141,13 +141,13 @@ func (server *LiveServer) Run() {
 	for {
 		select {
 		case <-db_server_disconnect:
-			// when disconnect to db server, stop connect to node
+			// when disconnect to forwarder, stop connect to node
 			server.stopWebsocketNode()
 			// restart all
 			server.Run()
 
 		case <-node_disconnect:
-			// when disconnect to node, stop connect to db server
+			// when disconnect to node, stop connect to Forwarder
 			server.stopWebsocketDBServer()
 			// try to reconnect node
 			server.Run()
