@@ -170,7 +170,7 @@ func (server *LiveServer) Run() {
 							for _, attr := range event.Attributes {
 								data[attr.Key] = attr.Value
 							}
-							data["time"] = time.Now().Format("01-02-2006 15:04:05")
+							data["time"] = time.Now().Format(time.RFC3339)
 							data["delegator"]=messageForm.Result.Events["transfer.sender"][0]
 							data["tx_hash"]=messageForm.Result.Events["tx.hash"][0]
 							data["tx_fee"]=messageForm.Result.Events["tx.fee"][0]

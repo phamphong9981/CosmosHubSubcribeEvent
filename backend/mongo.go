@@ -3,6 +3,7 @@ package backend
 import (
 	"context"
 	"encoding/json"
+	"strconv"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -13,11 +14,18 @@ const uri = "mongodb://localhost:27017"
 
 var mongoClient, _ = mongo.Connect(ctx, options.Client().ApplyURI(uri))
 
-func findAll() []string {
+func findAll(view_more string) []string {
 	var results []string
+	skip, err := strconv.ParseInt(view_more, 10, 0)
+	if err != nil {
+		panic(err)
+	}
 	coll := mongoClient.Database("CosmosHubSubcribeEvent").Collection("undelegate")
 	options := options.Find()
-	options.SetLimit(1)
+	options.SetLimit(3)
+	options.SetSkip(skip * 3)
+	options.SetSort(bson.D{{"time", -1}})
+
 	cursor, err := coll.Find(context.TODO(), bson.D{}, options)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
@@ -30,7 +38,7 @@ func findAll() []string {
 		panic(err)
 	}
 	for _, element := range bson_data {
-		output, err := json.MarshalIndent(element, "", "    ")
+		output, err := json.Marshal(element)
 		if err != nil {
 			panic(err)
 		}
@@ -39,12 +47,12 @@ func findAll() []string {
 	return results
 }
 
-func findByDelegator(delegator string) []string{
+func findByDelegator(delegator string) []string {
 	var results []string
 	coll := mongoClient.Database("CosmosHubSubcribeEvent").Collection("undelegate")
 	options := options.Find()
 	options.SetLimit(1)
-	cursor, err := coll.Find(context.TODO(), bson.D{{"delegator",delegator}}, options)
+	cursor, err := coll.Find(context.TODO(), bson.D{{"delegator", delegator}}, options)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return nil
@@ -56,7 +64,7 @@ func findByDelegator(delegator string) []string{
 		panic(err)
 	}
 	for _, element := range bson_data {
-		output, err := json.MarshalIndent(element, "", "    ")
+		output, err := json.Marshal(element)
 		if err != nil {
 			panic(err)
 		}
@@ -65,14 +73,14 @@ func findByDelegator(delegator string) []string{
 	return results
 }
 
-func getUnbondFromDelegator(delegator string) []string {
+func getUnbondFromDelegator(delegator string, view_more string) []string {
 
 	if delegator == "" {
 		return nil
 	}
 	if delegator == "all" {
 
-		return findAll()
+		return findAll(view_more)
 	}
 	return findByDelegator(delegator)
 }

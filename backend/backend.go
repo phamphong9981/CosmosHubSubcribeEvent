@@ -50,7 +50,9 @@ func Run() {
 	}))
 	r.GET("/unbond/:delegator", func(c *gin.Context) {
 		var delegator = c.Param("delegator")
-		c.JSONP(200, getUnbondFromDelegator(delegator))
+		var view_more = c.DefaultQuery("view_more","0")
+		log.Printf("%t", view_more=="")
+		c.JSONP(200, getUnbondFromDelegator(delegator, view_more))
 	})
 	subscibeInit()
 	go handleSubscibe()

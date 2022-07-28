@@ -20,7 +20,7 @@ func saveToMongo(json_data string) {
 		fmt.Println("Unmarshal in MongoDB fail: ", err)
 	}
 	coll := mongoClient.Database("CosmosHubSubcribeEvent").Collection("undelegate")
-	doc := bson.D{{"validator", mapData["validator"]}, {"time", mapData["time"]}, {"completion_time", mapData["completion_time"]}, {"delegator", mapData["delegator"]}, {"tx_hash", mapData["tx_hash"]}, {"tx_fee", mapData["tx_fee"]}}
+	doc := bson.D{{"validator", mapData["validator"]},{"amount",mapData["amount"] },  {"time", mapData["time"]}, {"completion_time", mapData["completion_time"]}, {"delegator", mapData["delegator"]}, {"tx_hash", mapData["tx_hash"]}, {"tx_fee", mapData["tx_fee"]}}
 	fmt.Print(doc)
 	_, err := coll.InsertOne(context.TODO(), doc)
 	if err != nil {
