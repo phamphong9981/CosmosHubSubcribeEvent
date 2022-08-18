@@ -23,6 +23,7 @@ export default {
     const store = useStore();
     const delegator = ref("");
     const socket = ref(null);
+    console.log(store);
     const search = function () {
       if (socket.value) {
         socket.value.close();

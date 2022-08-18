@@ -30,9 +30,6 @@
         </li>
       </ul>
     </div>
-    <div class="login">
-      <div class="content">Login</div>
-    </div>
   </div>
 </template>
 

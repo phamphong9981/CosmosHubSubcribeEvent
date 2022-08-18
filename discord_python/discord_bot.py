@@ -1,3 +1,4 @@
+from pickle import TRUE
 import discord
 from discord.ext import commands, tasks
 from pymongo import MongoClient
@@ -33,26 +34,59 @@ bot.remove_command("help")
 
 def get_warning_embed(detail):
     embed = discord.Embed(title="Warning", color=0xFF0000)
+    print(type(detail))
     embed.add_field(
-        name="Detail:", value=detail, inline=False)
+        name="Delegator:", value=detail["delegator"], inline=False)
+    embed.add_field(
+            name="Validator", value=detail["validator"], inline=False)
+    embed.add_field(name="Amount",
+                        value=detail["amount"], inline=False)
+    embed.add_field(
+            name="Time", value=detail["time"], inline=False)
+    embed.add_field(
+            name="Transaction hash", value=detail["tx_hash"], inline=False)  
     return embed
 
 def get_high_embed(detail):
     embed = discord.Embed(title="High", color=0xFF8000)
     embed.add_field(
-        name="Detail:", value=detail, inline=False)
+        name="Delegator:", value=detail["delegator"], inline=False)
+    embed.add_field(
+            name="Validator", value=detail["validator"], inline=False)
+    embed.add_field(name="Amount",
+                        value=detail["amount"], inline=False)
+    embed.add_field(
+            name="Time", value=detail["time"], inline=False)
+    embed.add_field(
+            name="Transaction hash", value=detail["tx_hash"], inline=False)  
     return embed
 
 def get_medium_embed(detail):
     embed = discord.Embed(title="Medium", color=0xFFFF00)
     embed.add_field(
-        name="Detail:", value=detail, inline=False)
+        name="Delegator:", value=detail["delegator"], inline=False)
+    embed.add_field(
+            name="Validator", value=detail["validator"], inline=False)
+    embed.add_field(name="Amount",
+                        value=detail["amount"], inline=False)
+    embed.add_field(
+            name="Time", value=detail["time"], inline=False)
+    embed.add_field(
+            name="Transaction hash", value=detail["tx_hash"], inline=False)  
     return embed
 
 def get_low_embed(detail):
     embed = discord.Embed(title="Low", color=0x00FF00)
     embed.add_field(
-        name="Detail:", value=detail, inline=False)
+        name="Delegator:", value=detail["delegator"], inline=False)
+    embed.add_field(
+            name="Validator", value=detail["validator"], inline=False)
+    embed.add_field(name="Amount",
+                        value=detail["amount"], inline=False)
+    embed.add_field(
+            name="Time", value=detail["time"], inline=False)
+    embed.add_field(
+            name="Transaction hash", value=detail["tx_hash"], inline=False)  
     return embed
 
 @bot.event

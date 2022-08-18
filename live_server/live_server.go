@@ -122,10 +122,22 @@ func (server *LiveServer) Run() {
 			}
 			time.Sleep(2 * time.Second)
 		}
+		// when receive flag from server, active websocket
+		for {
+			_, message, err := server.dbserver_connection.ReadMessage()
+			if err != nil {
+				log.Println("Disconnect to Database Server", err)
+				db_server_disconnect <- true
+				return
+			}
+			log.Printf("recv: %s", message)
+			if string(message) == "start websocket" {
+				go server.startWebsocketDBServer()
+				go server.startWebsocketNode()
+				break
+			}
+		}
 
-		// start websockets
-		go server.startWebsocketDBServer()
-		go server.startWebsocketNode()
 	}()
 	defer func() {
 		if server.dbserver_connection != nil {
@@ -171,9 +183,9 @@ func (server *LiveServer) Run() {
 								data[attr.Key] = attr.Value
 							}
 							data["time"] = time.Now().Format(time.RFC3339)
-							data["delegator"]=messageForm.Result.Events["transfer.sender"][0]
-							data["tx_hash"]=messageForm.Result.Events["tx.hash"][0]
-							data["tx_fee"]=messageForm.Result.Events["tx.fee"][0]
+							data["delegator"] = messageForm.Result.Events["transfer.sender"][0]
+							data["tx_hash"] = messageForm.Result.Events["tx.hash"][0]
+							data["tx_fee"] = messageForm.Result.Events["tx.fee"][0]
 						}
 					}
 				}

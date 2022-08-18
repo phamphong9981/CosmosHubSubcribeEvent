@@ -60,7 +60,6 @@ th {
 
 .background {
   background: gray;
-  height: 480px;
   overflow: hidden;
 }
 tr:nth-child(0) {

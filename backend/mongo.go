@@ -14,16 +14,16 @@ const uri = "mongodb://localhost:27017"
 
 var mongoClient, _ = mongo.Connect(ctx, options.Client().ApplyURI(uri))
 
-func findAll(view_more string) []string {
+func findAll(view_more_offset string) []string {
 	var results []string
-	skip, err := strconv.ParseInt(view_more, 10, 0)
+	skip, err := strconv.ParseInt(view_more_offset, 10, 0)
 	if err != nil {
 		panic(err)
 	}
 	coll := mongoClient.Database("CosmosHubSubcribeEvent").Collection("undelegate")
 	options := options.Find()
-	options.SetLimit(3)
-	options.SetSkip(skip * 3)
+	options.SetLimit(5)
+	options.SetSkip(skip)
 	options.SetSort(bson.D{{"time", -1}})
 
 	cursor, err := coll.Find(context.TODO(), bson.D{}, options)
@@ -47,11 +47,14 @@ func findAll(view_more string) []string {
 	return results
 }
 
-func findByDelegator(delegator string) []string {
+func findByDelegator(delegator string,view_more_offset string) []string {
 	var results []string
+	skip, err := strconv.ParseInt(view_more_offset, 10, 0)
 	coll := mongoClient.Database("CosmosHubSubcribeEvent").Collection("undelegate")
 	options := options.Find()
-	options.SetLimit(1)
+	options.SetLimit(5)
+	options.SetSkip(skip)
+	options.SetSort(bson.D{{"time", -1}})
 	cursor, err := coll.Find(context.TODO(), bson.D{{"delegator", delegator}}, options)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
@@ -73,14 +76,14 @@ func findByDelegator(delegator string) []string {
 	return results
 }
 
-func getUnbondFromDelegator(delegator string, view_more string) []string {
+func getUnbondFromDelegator(delegator string, view_more_offset string) []string {
 
 	if delegator == "" {
 		return nil
 	}
 	if delegator == "all" {
 
-		return findAll(view_more)
+		return findAll(view_more_offset)
 	}
-	return findByDelegator(delegator)
+	return findByDelegator(delegator,view_more_offset)
 }
